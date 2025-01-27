@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Management</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f4f8;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #2D9CDB;
+            font-size: 40px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        h2 {
+            color: #4CAF50;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Button Styles */
+        .btn {
+            background-color: #2D9CDB;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #1E76A6;
+            transform: scale(1.05);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            overflow: auto;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            font-size: 24px;
+            color: #2D9CDB;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #333;
+            cursor: pointer;
+        }
+
+        /* Form Styles */
+        .form-container label {
+            font-size: 16px;
+            margin-bottom: 8px;
+            display: block;
+            color: #555;
+        }
+
+        .form-container input[type="text"],
+        .form-container input[type="number"],
+        .form-container input[type="date"],
+        .form-container select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-container input:focus,
+        .form-container select:focus {
+            border-color: #2D9CDB;
+            outline: none;
+        }
+
+        .form-container button {
+            background-color: #4CAF50;
+            font-size: 18px;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .form-container button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+
+        /* Task Table Styles */
+        table {
+            width: 100%;
+            max-width: 1200px;
+            margin-top: 20px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        th {
+            background-color: #2D9CDB;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        td:last-child {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        form button {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 5px;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        form button:hover {
+            transform: scale(1.05);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            .modal-content {
+                width: 80%;
+            }
+
+            table {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .btn {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+
+            table, th, td {
+                font-size: 12px;
+            }
+
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Task Management</h1>
+
+    <!-- Button to Open Modal -->
+    <button class="btn" id="myBtn">Add New Task</button>
+
+    <!-- Modal -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close">&times;</span>
+                <h2>Add Task</h2>
+            </div>
+            <form action="/tasks/add" method="post" class="form-container">
+                <label for="description">Description:</label>
+                <input type="text" id="description" name="description" required>
+
+                <label for="doer">Doer:</label>
+                <select id="doer" name="taskDoerId" required>
+                    <option value="" disabled selected>Select a Doer</option>
+                    <option th:each="doer : ${taskDoers}" th:value="${doer.id}" th:text="${doer.name}"></option>
+                </select>
+
+                <label for="addDate">Add Date:</label>
+                <input type="date" id="addDate" name="taskAddDate" required>
+
+                <label for="deadline">Deadline:</label>
+                <input type="date" id="deadline" name="taskDeadlineDate" required>
+
+                <button type="submit">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Task Table -->
+    <h2>Current Tasks</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Doer Name</th>
+                <th>Description</th>
+                <th>Add Date</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="task : ${tasks}">
+                <td th:text="${taskDoerNames[task.id]}"></td>
+                <td th:text="${task.taskDescription}"></td>
+                <td th:text="${task.taskAddDate}"></td>
+                <td th:text="${task.taskDeadlineDate}"></td>
+                <td th:text="${task.isCompleted ? 'Complete' : ' Pending'}"></td>
+                <td>
+                    <form th:action="@{/tasks/status/{id}(id=${task.id})}" method="post">
+                        <button type="submit" th:text="${task.isCompleted ? 'Mark Pending' : 'Mark Complete'}"></button>
+                    </form>
+                    <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const modal = document.getElementById("myModal");
+        const btn = document.getElementById("myBtn");
+        const closeBtn = document.getElementsByClassName("close")[0];
+
+        btn.onclick = () => modal.style.display = "block";
+        closeBtn.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    </script>
+
+</body>
+</html>

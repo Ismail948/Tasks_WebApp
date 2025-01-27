@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Task Doers</title>
+</head>
+<body>
+<h1>Task Doers</h1>
+<a href="/taskdoers/add">Add Task Doer</a>
+<table>
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr th:each="taskDoer : ${taskDoers}">
+            <td th:text="${taskDoer.name}"></td>
+            <td th:text="${taskDoer.email}"></td>
+            <td th:text="${taskDoer.phoneNumber}"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>
