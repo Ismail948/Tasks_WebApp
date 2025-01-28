@@ -5,307 +5,350 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Management</title>
     <style>
+        /* Modern Color Scheme */
+        :root {
+            --primary: #6366f1;
+            --secondary: #3b82f6;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --light: #f8fafc;
+            --dark: #0f172a;
+        }
+
         /* Global Styles */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f0f4f8;
-            color: #333;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: var(--dark);
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 2rem 1rem;
             min-height: 100vh;
         }
 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
         h1 {
-            color: #2D9CDB;
-            font-size: 40px;
-            margin-bottom: 10px;
-            font-weight: 700;
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 800;
             text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        h2 {
-            color: #4CAF50;
-            font-size: 28px;
-            margin-bottom: 20px;
-            font-weight: 500;
-            text-align: center;
-        }
-
-        /* Button Styles */
-        .btn {
-            background-color: #2D9CDB;
-            color: white;
-            padding: 10px 20px;
-            font-size: 18px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #1E76A6;
-            transform: scale(1.05);
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
+        /* Floating Action Button */
+        .fab {
             position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 100;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        /* Modern Card Design */
+        .card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Enhanced Table Design */
+        .task-table {
             width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            overflow: auto;
-            animation: fadeIn 0.3s ease-in-out;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .task-table th {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            text-align: left;
         }
 
-        .modal-content {
-            background-color: white;
-            margin: 10% auto;
-            padding: 20px;
-            border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+        .task-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        .modal-header {
-            font-size: 24px;
-            color: #2D9CDB;
-            font-weight: bold;
-            margin-bottom: 20px;
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            font-weight: 500;
         }
 
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            transition: color 0.3s ease;
+        .status-complete {
+            background: #dcfce7;
+            color: #22c55e;
         }
 
-        .close:hover,
-        .close:focus {
-            color: #333;
-            cursor: pointer;
+        .status-pending {
+            background: #fee2e2;
+            color: #ef4444;
         }
 
-        /* Form Styles */
-        .form-container label {
-            font-size: 16px;
-            margin-bottom: 8px;
+        /* Modern Form Design */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
             display: block;
-            color: #555;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
         }
 
-        .form-container input[type="text"],
-        .form-container input[type="number"],
-        .form-container input[type="date"],
-        .form-container select {
+        .form-input {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.5rem;
             transition: border-color 0.3s ease;
         }
 
-        .form-container input:focus,
-        .form-container select:focus {
-            border-color: #2D9CDB;
+        .form-input:focus {
             outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
         }
 
-        .form-container button {
-            background-color: #4CAF50;
-            font-size: 18px;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
+        /* Animated Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
             cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            border: none;
         }
 
-        .form-container button:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-        }
-
-        /* Task Table Styles */
-        table {
-            width: 100%;
-            max-width: 1200px;
-            margin-top: 20px;
-            border-collapse: collapse;
-            background-color: white;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        th, td {
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        th {
-            background-color: #2D9CDB;
+        .btn-primary {
+            background: var(--primary);
             color: white;
-            font-weight: bold;
         }
 
-        tr:hover {
-            background-color: #f9f9f9;
+        .btn-primary:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px -3px rgba(99,102,241,0.3);
         }
 
-        td:last-child {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        .btn-danger {
+            background: var(--danger);
+            color: white;
         }
 
-        form button {
-            padding: 8px;
-            font-size: 14px;
-            border-radius: 5px;
-            transition: transform 0.3s ease, background-color 0.3s ease;
+        .btn-success {
+            background: var(--success);
+            color: white;
         }
 
-        form button:hover {
-            transform: scale(1.05);
+        /* Modern Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            animation: modalEnter 0.3s ease;
+        }
+
+        @keyframes modalEnter {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 500px;
+            margin: 2rem auto;
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .task-table {
+                display: block;
+                overflow-x: auto;
+            }
+
             h1 {
-                font-size: 32px;
+                font-size: 2rem;
             }
 
-            .modal-content {
-                width: 80%;
-            }
-
-            table {
-                font-size: 14px;
+            .fab {
+                bottom: 1rem;
+                right: 1rem;
             }
         }
 
         @media (max-width: 480px) {
-            h1 {
-                font-size: 28px;
+            .card {
+                padding: 1rem;
+            }
+
+            .task-table td, .task-table th {
+                padding: 0.75rem;
             }
 
             .btn {
-                font-size: 14px;
-                padding: 8px 16px;
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
             }
+        }
 
-            table, th, td {
-                font-size: 12px;
-            }
+        /* Loading Animation */
+        .loader {
+            animation: spin 1s linear infinite;
+        }
 
-            .modal-content {
-                width: 95%;
-            }
+        @keyframes spin {
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>🚀 Task Manager</h1>
 
-    <h1>Task Management</h1>
+        <!-- Floating Action Button -->
+        <button class="btn btn-primary fab" id="myBtn">
+            ➕ New Task
+        </button>
 
-    <!-- Button to Open Modal -->
-    <button class="btn" id="myBtn">Add New Task</button>
-
-    <!-- Modal -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
+        <!-- Modal -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>Add Task</h2>
+                <h2 style="margin-bottom: 2rem;">✨ Create New Task</h2>
+                <form action="/tasks/add" method="post">
+                    <div class="form-group">
+                        <label class="form-label">📝 Description</label>
+                        <input type="text" class="form-input" name="description" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">👤 Assign To</label>
+                        <select class="form-input" name="taskDoerId" required>
+                            <option value="" disabled selected>Select Team Member</option>
+                            <option th:each="doer : ${taskDoers}" th:value="${doer.id}" th:text="${doer.name}"></option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">📅 Start Date</label>
+                        <input type="date" class="form-input" name="taskAddDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">⏰ Deadline</label>
+                        <input type="date" class="form-input" name="taskDeadlineDate" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-full">
+                        🚀 Create Task
+                    </button>
+                </form>
             </div>
-            <form action="/tasks/add" method="post" class="form-container">
-                <label for="description">Description:</label>
-                <input type="text" id="description" name="description" required>
+        </div>
 
-                <label for="doer">Doer:</label>
-                <select id="doer" name="taskDoerId" required>
-                    <option value="" disabled selected>Select a Doer</option>
-                    <option th:each="doer : ${taskDoers}" th:value="${doer.id}" th:text="${doer.name}"></option>
-                </select>
-
-                <label for="addDate">Add Date:</label>
-                <input type="date" id="addDate" name="taskAddDate" required>
-
-                <label for="deadline">Deadline:</label>
-                <input type="date" id="deadline" name="taskDeadlineDate" required>
-
-                <button type="submit">Add Task</button>
-            </form>
+        <!-- Task List -->
+        <div class="card">
+            <table class="task-table">
+                <thead>
+                    <tr>
+                        <th>Assignee</th>
+                        <th>Description</th>
+                        <th>Start Date</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="task : ${tasks}">
+                        <td th:text="${taskDoerNames[task.id]}">👤 John Doe</td>
+                        <td th:text="${task.taskDescription}">Project Setup</td>
+                        <td th:text="${task.taskAddDate}">2023-10-01</td>
+                        <td th:text="${task.taskDeadlineDate}">2023-10-15</td>
+                        <td>
+                            <span class="status-badge" 
+                                  th:classappend="${task.isCompleted} ? 'status-complete' : 'status-pending'"
+                                  th:text="${task.isCompleted} ? '✅ Complete' : '⏳ Pending'">
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <form th:action="@{/tasks/status/{id}(id=${task.id})}" method="post">
+                                    <button type="submit" class="btn btn-success" 
+                                            th:text="${task.isCompleted} ? '⏳ Mark Pending' : '✅ Mark Complete'">
+                                    </button>
+                                </form>
+                                <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
+                                    <button type="submit" class="btn btn-danger">🗑️ Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-
-    <!-- Task Table -->
-    <h2>Current Tasks</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Doer Name</th>
-                <th>Description</th>
-                <th>Add Date</th>
-                <th>Deadline</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="task : ${tasks}">
-                <td th:text="${taskDoerNames[task.id]}"></td>
-                <td th:text="${task.taskDescription}"></td>
-                <td th:text="${task.taskAddDate}"></td>
-                <td th:text="${task.taskDeadlineDate}"></td>
-                <td th:text="${task.isCompleted ? 'Complete' : ' Pending'}"></td>
-                <td>
-                    <form th:action="@{/tasks/status/{id}(id=${task.id})}" method="post">
-                        <button type="submit" th:text="${task.isCompleted ? 'Mark Pending' : 'Mark Complete'}"></button>
-                    </form>
-                    <form th:action="@{/tasks/delete/{id}(id=${task.id})}" method="post">
-                        <button type="submit">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 
     <script>
         const modal = document.getElementById("myModal");
         const btn = document.getElementById("myBtn");
         const closeBtn = document.getElementsByClassName("close")[0];
 
+        // Modal Handling
         btn.onclick = () => modal.style.display = "block";
         closeBtn.onclick = () => modal.style.display = "none";
         window.onclick = (event) => {
-            if (event.target === modal) {
-                modal.style.display = "none";
-            }
+            if (event.target === modal) modal.style.display = "none";
         };
-    </script>
 
+        // Smooth Scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelector(anchor.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>
